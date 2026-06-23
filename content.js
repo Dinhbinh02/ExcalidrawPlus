@@ -239,12 +239,20 @@ function renderUserUI() {
 
   document.getElementById('excalidraw-plus-logout-btn').addEventListener('click', handleLogout);
 
+  const backupTime = localStorage.getItem('excalidraw-plus-backup-time');
+  const backupBtnHtml = backupTime ? `
+    <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-restore-btn" style="height: 30px; padding: 0 10px; font-size: 13px; border-color: #f08c00; color: #f08c00; background-color: transparent;" title="Restore last backup from ${backupTime}">Restore Backup</button>
+  ` : '';
+
   mainContent.innerHTML = `
     <div id="excalidraw-plus-active-status-container"></div>
     
     <div class="excalidraw-plus-section-title">
       <span>Cloud Projects</span>
-      <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-new-btn" style="height: 30px; padding: 0 10px; font-size: 13px;">+ Create new</button>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        ${backupBtnHtml}
+        <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-new-btn" style="height: 30px; padding: 0 10px; font-size: 13px;">+ Create new</button>
+      </div>
     </div>
     <div id="excalidraw-plus-project-list-container">
       <div class="excalidraw-plus-state">Loading projects...</div>
@@ -254,6 +262,9 @@ function renderUserUI() {
   renderActiveProjectStatus();
 
   document.getElementById('excalidraw-plus-new-btn').addEventListener('click', handleCreateNewProject);
+  if (backupTime) {
+    document.getElementById('excalidraw-plus-restore-btn').addEventListener('click', handleRestoreBackup);
+  }
 }
 
 function renderActiveProjectStatus() {
@@ -590,56 +601,70 @@ async function handleSaveProject(forceNew = false) {
       return;
     }
 
-    const content = {
-      elements: JSON.parse(elements),
-      appState: state ? JSON.parse(state) : {},
-      files: files ? JSON.parse(files) : {}
-    };
-
-    content.appState.name = name;
-
-    const saveBtn = document.getElementById('excalidraw-plus-save-btn') || document.getElementById('excalidraw-plus-sync-btn');
-    let oldText = "";
-    if (saveBtn) {
-      oldText = saveBtn.innerHTML;
-      saveBtn.innerHTML = "Saving...";
-      saveBtn.disabled = true;
-    }
-
     const fileId = forceNew ? null : activeFileId;
 
-    showToast("Saving to Cloud...");
+    if (elements === "[]" && fileId) {
+      showConfirmDialog(
+        "Warning: Empty Canvas",
+        "Your current canvas is empty. Saving will clear all elements in this cloud project. Are you sure you want to save?",
+        () => {
+          proceedWithSave(name, elements, state, files, fileId, forceNew, resolve);
+        }
+      );
+    } else {
+      proceedWithSave(name, elements, state, files, fileId, forceNew, resolve);
+    }
+  });
+}
 
-    chrome.runtime.sendMessage({
-      action: 'saveFile',
-      name: name,
-      content: content,
-      fileId: fileId
-    }, (response) => {
-      if (saveBtn) {
-        saveBtn.innerHTML = oldText;
-        saveBtn.disabled = false;
-      }
+function proceedWithSave(name, elements, state, files, fileId, forceNew, resolve) {
+  const content = {
+    elements: JSON.parse(elements),
+    appState: state ? JSON.parse(state) : {},
+    files: files ? JSON.parse(files) : {}
+  };
 
-      if (response && response.success) {
-        activeFileId = response.file.id;
-        localStorage.setItem('excalidraw-plus-active-file-id', response.file.id);
-        lastSavedElementsString = elements;
-        updateLastSyncTime();
-        showToast(forceNew ? "Created new copy on Cloud!" : "Drawing saved to Cloud!");
-        try {
-          const stateObj = JSON.parse(localStorage.getItem('excalidraw-state') || '{}');
-          stateObj.name = name;
-          localStorage.setItem('excalidraw-state', JSON.stringify(stateObj));
-        } catch (e) {}
-        loadProjects();
-        renderActiveProjectStatus();
-        resolve(true);
-      } else {
-        showToast("Save failed: " + (response ? response.error : "Connection error"));
-        resolve(false);
-      }
-    });
+  content.appState.name = name;
+
+  const saveBtn = document.getElementById('excalidraw-plus-save-btn') || document.getElementById('excalidraw-plus-sync-btn');
+  let oldText = "";
+  if (saveBtn) {
+    oldText = saveBtn.innerHTML;
+    saveBtn.innerHTML = "Saving...";
+    saveBtn.disabled = true;
+  }
+
+  showToast("Saving to Cloud...");
+
+  chrome.runtime.sendMessage({
+    action: 'saveFile',
+    name: name,
+    content: content,
+    fileId: fileId
+  }, (response) => {
+    if (saveBtn) {
+      saveBtn.innerHTML = oldText;
+      saveBtn.disabled = false;
+    }
+
+    if (response && response.success) {
+      activeFileId = response.file.id;
+      localStorage.setItem('excalidraw-plus-active-file-id', response.file.id);
+      lastSavedElementsString = elements;
+      updateLastSyncTime();
+      showToast(forceNew ? "Created new copy on Cloud!" : "Drawing saved to Cloud!");
+      try {
+        const stateObj = JSON.parse(localStorage.getItem('excalidraw-state') || '{}');
+        stateObj.name = name;
+        localStorage.setItem('excalidraw-state', JSON.stringify(stateObj));
+      } catch (e) {}
+      loadProjects();
+      renderActiveProjectStatus();
+      resolve(true);
+    } else {
+      showToast("Save failed: " + (response ? response.error : "Connection error"));
+      resolve(false);
+    }
   });
 }
 
@@ -648,6 +673,10 @@ async function handleAutosave() {
 
   const elements = localStorage.getItem('excalidraw');
   if (!elements || elements === lastSavedElementsString) return;
+
+  if (elements === "[]" && lastSavedElementsString !== "[]" && lastSavedElementsString !== "") {
+    return;
+  }
 
   const name = getActiveFilename();
   const state = localStorage.getItem('excalidraw-state');
@@ -686,6 +715,16 @@ async function handleLoadProject(fileId, filename) {
     if (response && response.success && response.content) {
       const content = response.content;
       
+      const currentElements = localStorage.getItem('excalidraw');
+      const currentState = localStorage.getItem('excalidraw-state');
+      const currentFiles = localStorage.getItem('excalidraw-files');
+      if (currentElements && currentElements !== "[]") {
+        localStorage.setItem('excalidraw-plus-backup-elements', currentElements);
+        if (currentState) localStorage.setItem('excalidraw-plus-backup-state', currentState);
+        if (currentFiles) localStorage.setItem('excalidraw-plus-backup-files', currentFiles);
+        localStorage.setItem('excalidraw-plus-backup-time', new Date().toLocaleString());
+      }
+
       localStorage.setItem('excalidraw', JSON.stringify(content.elements || []));
       if (content.appState) {
         localStorage.setItem('excalidraw-state', JSON.stringify(content.appState));
@@ -702,6 +741,32 @@ async function handleLoadProject(fileId, filename) {
       hideLoadingOverlay();
     }
   });
+}
+
+function handleRestoreBackup() {
+  const backupElements = localStorage.getItem('excalidraw-plus-backup-elements');
+  const backupState = localStorage.getItem('excalidraw-plus-backup-state');
+  const backupFiles = localStorage.getItem('excalidraw-plus-backup-files');
+
+  if (!backupElements) return showToast("No backup available.");
+
+  showConfirmDialog(
+    "Restore Backup",
+    "Are you sure you want to restore the backup? This will replace your current canvas.",
+    () => {
+      localStorage.setItem('excalidraw', backupElements);
+      if (backupState) localStorage.setItem('excalidraw-state', backupState);
+      if (backupFiles) localStorage.setItem('excalidraw-files', backupFiles);
+
+      localStorage.removeItem('excalidraw-plus-backup-elements');
+      localStorage.removeItem('excalidraw-plus-backup-state');
+      localStorage.removeItem('excalidraw-plus-backup-files');
+      localStorage.removeItem('excalidraw-plus-backup-time');
+
+      showToast("Backup restored successfully.");
+      window.location.reload();
+    }
+  );
 }
 
 async function handleDeleteProject(fileId) {
@@ -777,7 +842,14 @@ function init() {
   
   observer.observe(document.documentElement, { childList: true, subtree: true });
   
-  
+  window.addEventListener('beforeunload', (event) => {
+    const elements = localStorage.getItem('excalidraw');
+    if (currentUser && activeFileId && elements && elements !== lastSavedElementsString && elements !== "[]") {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  });
+
   window.addEventListener('keydown', (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
       event.preventDefault();
@@ -802,7 +874,6 @@ function init() {
     }
   }, true);
 
-  
   setInterval(handleAutosave, 900000);
 
   if (document.readyState === 'loading') {
