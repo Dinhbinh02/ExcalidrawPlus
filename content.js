@@ -39,7 +39,7 @@ function showConfirmDialog(title, message, onConfirm) {
   container.innerHTML = `
     <div class="Modal Dialog ConfirmDialog">
       <div class="Modal__background" id="excalidraw-confirm-bg"></div>
-      <div class="Modal__content" style="--max-width: 420px;">
+      <div class="Modal__content excalidraw-confirm-dialog-content">
         <div class="Island">
           <h2 class="Dialog__title"><span class="Dialog__titleContent">${title}</span></h2>
           <button class="Modal__close" id="excalidraw-confirm-close-btn" aria-label="Close" type="button">
@@ -50,10 +50,10 @@ function showConfirmDialog(title, message, onConfirm) {
             </svg>
           </button>
           <div class="Dialog__content">
-            <p style="margin-bottom: 24px; line-height: 1.5; font-size: 13px; color: var(--text-primary-color);">${message}</p>
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
-              <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-confirm-cancel" style="height: 36px; font-size: 13px;">Cancel</button>
-              <button class="excalidraw-plus-btn excalidraw-plus-btn-primary" style="background-color: var(--color-critical, #ea4335); height: 36px; font-size: 13px;" id="excalidraw-confirm-ok">Confirm</button>
+            <p class="excalidraw-confirm-text">${message}</p>
+            <div class="excalidraw-confirm-actions">
+              <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary excalidraw-confirm-btn-secondary" id="excalidraw-confirm-cancel">Cancel</button>
+              <button class="excalidraw-plus-btn excalidraw-plus-btn-primary excalidraw-confirm-btn-primary" id="excalidraw-confirm-ok">Confirm</button>
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ function showLoadingOverlay(message = "Loading drawing from Cloud...") {
     loader.className = 'excalidraw-plus-loading-overlay';
     loader.innerHTML = `
       <div class="excalidraw-plus-spinner"></div>
-      <div style="font-weight: 600; font-size: 14px;">${message}</div>
+      <div class="excalidraw-plus-loader-text">${message}</div>
     `;
     document.documentElement.appendChild(loader);
   }
@@ -91,21 +91,6 @@ function hideLoadingOverlay() {
   const loader = document.getElementById('excalidraw-plus-loader');
   if (loader) {
     loader.remove();
-  }
-}
-
-
-function showLoadingOverlay(message = "Loading drawing from Cloud...") {
-  let loader = document.getElementById('excalidraw-plus-loader');
-  if (!loader) {
-    loader = document.createElement('div');
-    loader.id = 'excalidraw-plus-loader';
-    loader.className = 'excalidraw-plus-loading-overlay';
-    loader.innerHTML = `
-      <div class="excalidraw-plus-spinner"></div>
-      <div style="font-weight: 600; font-size: 14px;">${message}</div>
-    `;
-    document.documentElement.appendChild(loader);
   }
 }
 
@@ -120,7 +105,7 @@ function injectUI() {
   container.innerHTML = `
     <div class="Modal Dialog">
       <div class="Modal__background" id="excalidraw-plus-modal-bg"></div>
-      <div class="Modal__content" style="--max-width: 500px;" tabindex="0">
+      <div class="Modal__content excalidraw-plus-dialog-content" tabindex="0">
         <div class="Island">
           <h2 class="Dialog__title">
             <span class="Dialog__titleContent">Excalidraw+ Cloud</span>
@@ -136,8 +121,8 @@ function injectUI() {
           <div class="Dialog__content">
             <div id="excalidraw-plus-auth-section"></div>
             <div id="excalidraw-plus-main-content"></div>
-            <div id="excalidraw-plus-footer-section" style="margin-top: 12px; padding-top: 0; display: none;">
-              <button class="excalidraw-plus-btn excalidraw-plus-btn-danger-text" id="excalidraw-plus-logout-btn" style="width: 100%;">Sign out</button>
+            <div id="excalidraw-plus-footer-section" class="excalidraw-plus-footer">
+              <button class="excalidraw-plus-btn excalidraw-plus-btn-danger-text excalidraw-plus-btn-full" id="excalidraw-plus-logout-btn">Sign out</button>
             </div>
           </div>
         </div>
@@ -196,8 +181,8 @@ function renderLoginUI() {
 
   mainContent.innerHTML = `
     <div class="excalidraw-plus-state">
-      <p style="margin-bottom: 24px; line-height: 1.6; font-size: 13px;">Sign in with Google to sync, save, and manage your drawing projects directly on your Google Drive.</p>
-      <button class="excalidraw-plus-btn excalidraw-plus-btn-primary" id="excalidraw-plus-login-btn" style="width: 100%; height: 42px;">
+      <p class="excalidraw-plus-login-desc">Sign in with Google to sync, save, and manage your drawing projects directly on your Google Drive.</p>
+      <button class="excalidraw-plus-btn excalidraw-plus-btn-primary excalidraw-plus-login-btn" id="excalidraw-plus-login-btn">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
           <path d="M12.24 10.285V13.4h6.887C18.2 15.614 15.645 18 12.24 18c-3.86 0-7-3.14-7-7s3.14-7 7-7c1.7 0 3.3 0.643 4.56 1.814l2.43-2.43C17.27 1.637 14.87 1 12.24 1 6.58 1 2 5.58 2 11.24s4.58 10.24 10.24 10.24c5.795 0 10.24-4.11 10.24-10.24 0-.568-.057-1.125-.17-1.67H12.24z"/>
         </svg>
@@ -220,6 +205,7 @@ function updateLastSyncTime() {
 }
 
 function renderUserUI() {
+  const backupTime = localStorage.getItem('excalidraw-plus-backup-time');
   const authSection = document.getElementById('excalidraw-plus-auth-section');
   const mainContent = document.getElementById('excalidraw-plus-main-content');
   const footerSection = document.getElementById('excalidraw-plus-footer-section');
@@ -233,15 +219,14 @@ function renderUserUI() {
         <span class="excalidraw-plus-username">${currentUser.name}</span>
         <span class="excalidraw-plus-email">${currentUser.email}</span>
       </div>
-      <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-logout-btn" style="height: 28px; padding: 0 10px; font-size: 11px; border-color: var(--color-critical, #ea4335); color: var(--color-critical, #ea4335); font-weight: 600;">Sign out</button>
+      <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary excalidraw-plus-logout-btn-small" id="excalidraw-plus-logout-btn">Sign out</button>
     </div>
   `;
 
   document.getElementById('excalidraw-plus-logout-btn').addEventListener('click', handleLogout);
 
-  const backupTime = localStorage.getItem('excalidraw-plus-backup-time');
   const backupBtnHtml = backupTime ? `
-    <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-restore-btn" style="height: 30px; padding: 0 10px; font-size: 13px; border-color: #f08c00; color: #f08c00; background-color: transparent;" title="Restore last backup from ${backupTime}">Restore Backup</button>
+    <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary excalidraw-plus-restore-btn" id="excalidraw-plus-restore-btn" title="Restore last backup from ${backupTime}">Restore Backup</button>
   ` : '';
 
   mainContent.innerHTML = `
@@ -249,9 +234,9 @@ function renderUserUI() {
     
     <div class="excalidraw-plus-section-title">
       <span>Cloud Projects</span>
-      <div style="display: flex; gap: 8px; align-items: center;">
+      <div class="excalidraw-plus-section-actions">
         ${backupBtnHtml}
-        <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-new-btn" style="height: 30px; padding: 0 10px; font-size: 13px;">+ Create new</button>
+        <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary excalidraw-plus-new-btn" id="excalidraw-plus-new-btn">+ Create new</button>
       </div>
     </div>
     <div id="excalidraw-plus-project-list-container">
@@ -277,17 +262,17 @@ function renderActiveProjectStatus() {
   if (activeFileId) {
     statusContainer.innerHTML = `
       <div class="excalidraw-plus-active-project-card">
-        <div class="excalidraw-plus-card-header" style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-          <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex-grow: 1;">
-            <svg class="excalidraw-plus-cloud-icon active" viewBox="0 0 24 24" width="20" height="20" style="flex-shrink: 0;">
+        <div class="excalidraw-plus-card-header excalidraw-plus-card-header-flex">
+          <div class="excalidraw-plus-card-info-flex">
+            <svg class="excalidraw-plus-cloud-icon active excalidraw-plus-flex-shrink-0" viewBox="0 0 24 24" width="20" height="20">
               <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
             </svg>
-            <div class="excalidraw-plus-card-title-group" style="overflow: hidden;">
+            <div class="excalidraw-plus-card-title-group excalidraw-plus-overflow-hidden">
               <div class="excalidraw-plus-card-status">Linked to Cloud</div>
-              <div class="excalidraw-plus-card-name" id="excalidraw-plus-active-name" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">${activeName}</div>
+              <div class="excalidraw-plus-card-name excalidraw-plus-text-ellipsis" id="excalidraw-plus-active-name">${activeName}</div>
             </div>
           </div>
-          <button class="excalidraw-plus-btn excalidraw-plus-btn-primary" id="excalidraw-plus-sync-btn" style="height: 30px; font-size: 12px; padding: 0 10px; flex-shrink: 0;">Sync Now</button>
+          <button class="excalidraw-plus-btn excalidraw-plus-btn-primary excalidraw-plus-sync-btn-small" id="excalidraw-plus-sync-btn">Sync Now</button>
         </div>
       </div>
     `;
@@ -382,7 +367,7 @@ async function loadProjects() {
       projectList = response.files.filter(f => f.name !== 'lumina_backup.json');
       renderProjectList();
     } else {
-      container.innerHTML = `<div class="excalidraw-plus-state" style="color:var(--color-critical);">Failed to load cloud projects.</div>`;
+      container.innerHTML = `<div class="excalidraw-plus-state excalidraw-plus-state-error">Failed to load cloud projects.</div>`;
     }
   });
 }
@@ -402,7 +387,7 @@ function renderProjectList() {
       <div class="excalidraw-plus-item" data-id="${file.id}">
         <div class="excalidraw-plus-item-info" id="info-${file.id}">
           ${isEditing ? `
-            <input type="text" id="rename-input-${file.id}" class="excalidraw-plus-input" value="${file.name}" style="height: 28px; font-size: 13px; padding: 0 8px; width: 100%;">
+            <input type="text" id="rename-input-${file.id}" class="excalidraw-plus-input excalidraw-plus-rename-input-small" value="${file.name}">
           ` : `
             <span class="excalidraw-plus-item-name">${file.name}</span>
             <span class="excalidraw-plus-item-date">Updated: ${new Date(file.modifiedTime).toLocaleString()}</span>
@@ -604,13 +589,8 @@ async function handleSaveProject(forceNew = false) {
     const fileId = forceNew ? null : activeFileId;
 
     if (elements === "[]" && fileId) {
-      showConfirmDialog(
-        "Warning: Empty Canvas",
-        "Your current canvas is empty. Saving will clear all elements in this cloud project. Are you sure you want to save?",
-        () => {
-          proceedWithSave(name, elements, state, files, fileId, forceNew, resolve);
-        }
-      );
+      showToast("Cannot overwrite a cloud project with an empty canvas.");
+      resolve(false);
     } else {
       proceedWithSave(name, elements, state, files, fileId, forceNew, resolve);
     }
@@ -804,7 +784,7 @@ const observer = new MutationObserver((mutations) => {
         </svg>
       </div>
       <div class="dropdown-menu-item__text">
-        <span style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Sign in with Google</span>
+        <span class="excalidraw-plus-text-ellipsis">Sign in with Google</span>
       </div>
     `;
 

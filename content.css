@@ -397,3 +397,139 @@
   align-items: center !important;
   gap: 10px !important;
 }
+
+/* Inline to CSS Migration */
+.excalidraw-confirm-dialog-content {
+  max-width: 420px !important;
+}
+
+.excalidraw-confirm-text {
+  margin-bottom: 24px !important;
+  line-height: 1.5 !important;
+  font-size: 13px !important;
+  color: var(--text-primary-color) !important;
+}
+
+.excalidraw-confirm-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+
+.excalidraw-confirm-btn-secondary {
+  height: 36px !important;
+  font-size: 13px !important;
+}
+
+.excalidraw-confirm-btn-primary {
+  background-color: var(--color-critical, #ea4335) !important;
+  height: 36px !important;
+  font-size: 13px !important;
+}
+
+.excalidraw-plus-loader-text {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.excalidraw-plus-dialog-content {
+  max-width: 500px !important;
+}
+
+.excalidraw-plus-footer {
+  margin-top: 12px !important;
+  padding-top: 0 !important;
+  display: none !important;
+}
+
+.excalidraw-plus-btn-full {
+  width: 100% !important;
+}
+
+.excalidraw-plus-login-desc {
+  margin-bottom: 24px !important;
+  line-height: 1.6 !important;
+  font-size: 13px !important;
+}
+
+.excalidraw-plus-login-btn {
+  width: 100% !important;
+  height: 42px !important;
+}
+
+.excalidraw-plus-logout-btn-small {
+  height: 28px !important;
+  padding: 0 10px !important;
+  font-size: 11px !important;
+  border-color: var(--color-critical, #ea4335) !important;
+  color: var(--color-critical, #ea4335) !important;
+  font-weight: 600 !important;
+}
+
+.excalidraw-plus-restore-btn {
+  height: 30px !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+  border-color: #f08c00 !important;
+  color: #f08c00 !important;
+  background-color: transparent !important;
+}
+
+.excalidraw-plus-section-actions {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.excalidraw-plus-new-btn {
+  height: 30px !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+}
+
+.excalidraw-plus-card-header-flex {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+
+.excalidraw-plus-card-info-flex {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  overflow: hidden !important;
+  flex-grow: 1 !important;
+}
+
+.excalidraw-plus-flex-shrink-0 {
+  flex-shrink: 0 !important;
+}
+
+.excalidraw-plus-overflow-hidden {
+  overflow: hidden !important;
+}
+
+.excalidraw-plus-text-ellipsis {
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+}
+
+.excalidraw-plus-sync-btn-small {
+  height: 30px !important;
+  font-size: 12px !important;
+  padding: 0 10px !important;
+  flex-shrink: 0 !important;
+}
+
+.excalidraw-plus-rename-input-small {
+  height: 28px !important;
+  font-size: 13px !important;
+  padding: 0 8px !important;
+  width: 100% !important;
+}
+
+.excalidraw-plus-state-error {
+  color: var(--color-critical) !important;
+}
