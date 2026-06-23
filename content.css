@@ -1,0 +1,384 @@
+
+@font-face {
+  font-family: 'Excalifont';
+  src: url('chrome-extension://__MSG_@@extension_id__/fonts/DFVN-Excalifont.ttf') format('truetype'),
+    url('chrome-extension://__MSG_@@extension_id__/fonts/DFVN-Excalifont.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+.excalidraw-plus-signin-btn {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  color: var(--button-color, #1e1e1e) !important;
+  text-decoration: none;
+  font-family: "Assistant", "Segoe UI", sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: var(--border-radius-lg, 8px);
+  transition: background-color 0.2s ease;
+}
+
+.excalidraw-plus-signin-btn:hover {
+  background-color: var(--dropdown-hover-bg, #f1f3f5);
+}
+
+.excalidraw-plus-signin-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.theme--dark .excalidraw-plus-signin-btn {
+  color: #e3e3e3 !important;
+}
+
+.theme--dark .excalidraw-plus-signin-btn:hover {
+  background-color: #2e2e2e;
+}
+
+
+.excalidraw-plus-modal-overlay {
+  display: none !important;
+}
+
+.excalidraw-plus-modal-overlay .Dialog__title {
+  border: none !important;
+  margin-bottom: 16px !important;
+  padding-bottom: 0 !important;
+}
+
+.excalidraw-plus-modal-overlay.open {
+  display: flex !important;
+}
+
+
+.excalidraw-plus-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.excalidraw-plus-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-primary, #6965db);
+}
+
+.excalidraw-plus-profile-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.excalidraw-plus-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary-color);
+}
+
+.excalidraw-plus-email {
+  font-size: 11px;
+  color: var(--icon-fill-color, #80868b);
+}
+
+
+.excalidraw-plus-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.excalidraw-plus-input {
+  flex-grow: 1;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--dialog-border-color, #ccc);
+  border-radius: var(--border-radius-lg, 8px) !important;
+  font-size: 14px;
+  outline: none;
+  background-color: var(--island-bg-color, #fff);
+  color: var(--text-primary-color, #000);
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.excalidraw-plus-input:focus {
+  border-color: var(--color-primary, #6965db) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+.excalidraw-plus-btn {
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-lg, 8px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+}
+
+.excalidraw-plus-btn-primary {
+  background-color: var(--color-primary, #6965db);
+  color: #ffffff;
+}
+
+.excalidraw-plus-btn-primary:hover {
+  background-color: var(--color-primary-darker, #5854c7);
+}
+
+.excalidraw-plus-btn-secondary {
+  background-color: var(--island-bg-color, #ffffff);
+  color: var(--text-primary-color);
+  border: 1px solid var(--dialog-border-color, #ccc);
+}
+
+.excalidraw-plus-btn-secondary:hover {
+  background-color: var(--color-primary, #6965db) !important;
+  border-color: var(--color-primary, #6965db) !important;
+  color: #ffffff !important;
+}
+
+#excalidraw-plus-logout-btn {
+  background-color: transparent !important;
+  color: var(--color-critical, #ea4335) !important;
+  border: 1px solid var(--color-critical, #ea4335) !important;
+  transition: all 0.15s ease !important;
+}
+
+#excalidraw-plus-logout-btn:hover {
+  background-color: var(--color-critical, #ea4335) !important;
+  color: #ffffff !important;
+}
+
+.excalidraw-plus-btn-danger-text {
+  background-color: transparent;
+  color: var(--color-critical, #ea4335);
+  border: 1px solid var(--color-critical, #ea4335);
+}
+
+.excalidraw-plus-btn-danger-text:hover {
+  background-color: rgba(234, 67, 53, 0.05);
+}
+
+
+.excalidraw-plus-action-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-fill-color, #5f6368);
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.excalidraw-plus-action-icon-btn:hover {
+  background-color: var(--button-hover-bg, #e8eaed);
+  color: var(--text-primary-color);
+}
+
+.excalidraw-plus-action-icon-btn.delete:hover {
+  color: var(--color-critical, #ea4335);
+  background-color: rgba(234, 67, 53, 0.08);
+}
+
+
+.excalidraw-plus-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 12px 0 8px;
+  padding-bottom: 0;
+  color: var(--text-primary-color);
+}
+
+
+.excalidraw-plus-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.excalidraw-plus-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px;
+  border-radius: var(--border-radius-lg, 8px);
+  background: transparent;
+  transition: background-color 0.1s ease;
+}
+
+.excalidraw-plus-item:hover {
+  background-color: var(--button-hover-bg, rgba(0, 0, 0, 0.02));
+}
+
+.excalidraw-plus-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+  cursor: pointer;
+  padding-right: 12px;
+}
+
+.excalidraw-plus-item-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary-color);
+}
+
+.excalidraw-plus-item-date {
+  font-size: 10px;
+  color: var(--icon-fill-color, #80868b);
+}
+
+.excalidraw-plus-item-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+
+.excalidraw-plus-state {
+  text-align: center;
+  font-size: 14px;
+  color: var(--icon-fill-color);
+  padding: 32px 16px;
+}
+
+
+.excalidraw-plus-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--island-bg-color, #ffffff);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-primary, sans-serif);
+  color: var(--text-primary-color, #121212);
+}
+
+.excalidraw-plus-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--dialog-border-color, #e0e0e0);
+  border-top-color: var(--color-primary, #6965db);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.excalidraw-plus-modal-overlay .Island {
+  padding: 16px !important;
+}
+
+
+.excalidraw-plus-active-project-card {
+  background-color: var(--button-hover-bg, rgba(0, 0, 0, 0.02));
+  border: none;
+  border-radius: var(--border-radius-lg, 8px);
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.excalidraw-plus-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.excalidraw-plus-cloud-icon.active {
+  color: #2b8a3e;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.theme--dark .excalidraw-plus-cloud-icon.active {
+  color: #40c057;
+}
+
+.excalidraw-plus-card-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.excalidraw-plus-card-status {
+  font-size: 10px;
+  color: #2b8a3e;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.theme--dark .excalidraw-plus-card-status {
+  color: #40c057;
+}
+
+.excalidraw-plus-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary-color);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.excalidraw-plus-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+
+.excalidraw-plus-toast-container {
+  position: fixed !important;
+  bottom: 40px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 99999999 !important;
+  pointer-events: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 10px !important;
+}

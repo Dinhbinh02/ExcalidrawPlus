@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Excalidraw+",
+  "version": "1.0",
+  "description": "Enhances Excalidraw with additional features, localized font support, and seamless Google Drive project synchronization.",
+  "permissions": [
+    "declarativeNetRequest",
+    "identity",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://excalidraw.com/*"
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmhM7QDUhI4bOV/BWI3GQGJKdd/DWgwqMSKCIjCYiCVEUraqYLo9L23UvoEtozUe+ZgiDbgZ4FVwaKzLkBGNb8sp+C68DV9VWRGUp4Em6QibLPvGWMzDHe4D1rdbU1/fdX8A/IEgpNG/xIPkl0RNvYNSWrA2avs/7C4CIg3nc1g3k1kLRkql1Kw2kym5NyyR7Ub0D9P2oNEAjZlGjSZYyVBCZGtiY69RagMS2O2lK+gQ6fSYQg5ltc77iHOAfyn+dX6OORbX72P2J3O9ElPbjFxoc3EDrsGlm2d0vBMykmy7HcQOzhPrMVduo1+yVneYaRP2LRI2I4md7Ae0xqQNGBQIDAQAB",
+  "oauth2": {
+    "client_id": "824888142961-rl8p766vurc40cls3cuaabd0vj16j804.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/drive.appdata"
+    ]
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://excalidraw.com/*"],
+      "css": ["content.css"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["fonts/*"],
+      "matches": ["https://excalidraw.com/*"]
+    }
+  ]
+}
