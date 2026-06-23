@@ -432,16 +432,38 @@ function renderProjectList() {
     const isEditing = file.id === editingFileId;
 
     if (!isEditing && infoEl) {
-      infoEl.addEventListener('click', () => {
+      infoEl.addEventListener('click', async () => {
         if (file.id === activeFileId) {
           closeModal();
           return;
         }
-        showConfirmDialog(
-          "Load Drawing",
-          `Are you sure you want to load "${file.name}"? Current canvas data in this tab will be overwritten.`,
-          () => handleLoadProject(file.id, file.name)
-        );
+        
+        const elements = localStorage.getItem('excalidraw');
+        const isCanvasEmpty = !elements || elements === "[]" || elements === "";
+        
+        if (isCanvasEmpty) {
+          handleLoadProject(file.id, file.name);
+        } else {
+          if (activeFileId) {
+            showToast("Saving current changes...");
+            const saved = await handleSaveProject();
+            if (saved) {
+              handleLoadProject(file.id, file.name);
+            } else {
+              showConfirmDialog(
+                "Load Drawing",
+                `Failed to autosave. Are you sure you want to load "${file.name}"? Current canvas data in this tab will be overwritten.`,
+                () => handleLoadProject(file.id, file.name)
+              );
+            }
+          } else {
+            showConfirmDialog(
+              "Load Drawing",
+              `Are you sure you want to load "${file.name}"? Current canvas data in this tab will be overwritten.`,
+              () => handleLoadProject(file.id, file.name)
+            );
+          }
+        }
       });
     }
 
