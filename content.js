@@ -5,6 +5,7 @@ let projectList = [];
 let activeFileId = localStorage.getItem('excalidraw-plus-active-file-id') || null;
 let lastSavedElementsString = "";
 let isEditingName = false;
+let editingFileId = null;
 
 
 function showToast(message) {
@@ -263,69 +264,24 @@ function renderActiveProjectStatus() {
   const activeName = activeProject ? activeProject.name : getActiveFilename();
 
   if (activeFileId) {
-    if (isEditingName) {
-      statusContainer.innerHTML = `
-        <div class="excalidraw-plus-active-project-card">
-          <div class="excalidraw-plus-card-header">
-            <svg class="excalidraw-plus-cloud-icon active" viewBox="0 0 24 24" width="20" height="20">
+    statusContainer.innerHTML = `
+      <div class="excalidraw-plus-active-project-card">
+        <div class="excalidraw-plus-card-header" style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex-grow: 1;">
+            <svg class="excalidraw-plus-cloud-icon active" viewBox="0 0 24 24" width="20" height="20" style="flex-shrink: 0;">
               <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
             </svg>
-            <div class="excalidraw-plus-card-title-group" style="flex-grow: 1;">
-              <div class="excalidraw-plus-card-status">Rename Project</div>
-              <input type="text" id="excalidraw-plus-rename-input" class="excalidraw-plus-input" value="${activeName}" style="margin-top: 4px; height: 32px; width: 100%;">
-            </div>
-          </div>
-          <div class="excalidraw-plus-card-actions">
-            <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-cancel-name-btn" style="flex: 1; height: 32px; font-size: 12px;">Cancel</button>
-            <button class="excalidraw-plus-btn excalidraw-plus-btn-primary" id="excalidraw-plus-save-name-btn" style="flex: 1; height: 32px; font-size: 12px;">Save</button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('excalidraw-plus-save-name-btn').addEventListener('click', handleRenameProject);
-      document.getElementById('excalidraw-plus-cancel-name-btn').addEventListener('click', () => {
-        isEditingName = false;
-        renderActiveProjectStatus();
-      });
-
-      const renameInput = document.getElementById('excalidraw-plus-rename-input');
-      if (renameInput) {
-        renameInput.focus();
-        renameInput.select();
-        renameInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') handleRenameProject();
-          if (e.key === 'Escape') {
-            isEditingName = false;
-            renderActiveProjectStatus();
-          }
-        });
-      }
-    } else {
-      statusContainer.innerHTML = `
-        <div class="excalidraw-plus-active-project-card">
-          <div class="excalidraw-plus-card-header">
-            <svg class="excalidraw-plus-cloud-icon active" viewBox="0 0 24 24" width="20" height="20">
-              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
-            </svg>
-            <div class="excalidraw-plus-card-title-group">
+            <div class="excalidraw-plus-card-title-group" style="overflow: hidden;">
               <div class="excalidraw-plus-card-status">Linked to Cloud</div>
-              <div class="excalidraw-plus-card-name" id="excalidraw-plus-active-name">${activeName}</div>
-              <div class="excalidraw-plus-card-sync-time" style="font-size: 11px; color: var(--icon-fill-color); margin-top: 2px;">Last sync: ${getLastSyncTime()}</div>
+              <div class="excalidraw-plus-card-name" id="excalidraw-plus-active-name" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">${activeName}</div>
             </div>
           </div>
-          <div class="excalidraw-plus-card-actions">
-            <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-rename-btn" style="flex: 1;">Rename</button>
-            <button class="excalidraw-plus-btn excalidraw-plus-btn-primary" id="excalidraw-plus-sync-btn" style="flex: 1;">Sync Now</button>
-          </div>
+          <button class="excalidraw-plus-btn excalidraw-plus-btn-primary" id="excalidraw-plus-sync-btn" style="height: 30px; font-size: 12px; padding: 0 10px; flex-shrink: 0;">Sync Now</button>
         </div>
-      `;
+      </div>
+    `;
 
-      document.getElementById('excalidraw-plus-sync-btn').addEventListener('click', () => handleSaveProject(false));
-      document.getElementById('excalidraw-plus-rename-btn').addEventListener('click', () => {
-        isEditingName = true;
-        renderActiveProjectStatus();
-      });
-    }
+    document.getElementById('excalidraw-plus-sync-btn').addEventListener('click', () => handleSaveProject(false));
   } else {
     statusContainer.innerHTML = `
       <div class="excalidraw-plus-input-group">
@@ -338,50 +294,34 @@ function renderActiveProjectStatus() {
   }
 }
 
-async function handleRenameProject() {
-  const input = document.getElementById('excalidraw-plus-rename-input');
-  if (!input) return;
-  const newName = input.value.trim();
+async function handleRenameProjectInList(fileId, oldName, inputEl) {
+  const newName = inputEl.value.trim();
   if (!newName) return showToast("Name cannot be empty");
-
-  const elements = localStorage.getItem('excalidraw');
-  const state = localStorage.getItem('excalidraw-state');
-  const files = localStorage.getItem('excalidraw-files');
-
-  if (!elements) return showToast("No drawing data to save!");
-
-  const content = {
-    elements: JSON.parse(elements),
-    appState: state ? JSON.parse(state) : {},
-    files: files ? JSON.parse(files) : {}
-  };
-  content.appState.name = newName;
-
-  const saveBtn = document.getElementById('excalidraw-plus-save-name-btn');
-  if (saveBtn) {
-    saveBtn.innerHTML = "Saving...";
-    saveBtn.disabled = true;
+  if (newName === oldName) {
+    editingFileId = null;
+    renderProjectList();
+    return;
   }
 
   chrome.runtime.sendMessage({
-    action: 'saveFile',
-    name: newName,
-    content: content,
-    fileId: activeFileId
+    action: 'renameFile',
+    fileId: fileId,
+    name: newName
   }, (response) => {
-    isEditingName = false;
+    editingFileId = null;
     if (response && response.success) {
-      updateLastSyncTime();
       showToast("Drawing renamed successfully.");
-      try {
-        const stateObj = JSON.parse(localStorage.getItem('excalidraw-state') || '{}');
-        stateObj.name = newName;
-        localStorage.setItem('excalidraw-state', JSON.stringify(stateObj));
-      } catch (e) {}
+      if (fileId === activeFileId) {
+        try {
+          const stateObj = JSON.parse(localStorage.getItem('excalidraw-state') || '{}');
+          stateObj.name = newName;
+          localStorage.setItem('excalidraw-state', JSON.stringify(stateObj));
+        } catch (e) {}
+      }
       loadProjects();
     } else {
       showToast("Rename failed: " + (response ? response.error : "Connection error"));
-      renderActiveProjectStatus();
+      renderProjectList();
     }
   });
 }
@@ -445,50 +385,126 @@ function renderProjectList() {
     return;
   }
 
-  const listHtml = projectList.map(file => `
-    <div class="excalidraw-plus-item" data-id="${file.id}">
-      <div class="excalidraw-plus-item-info" id="info-${file.id}">
-        <span class="excalidraw-plus-item-name">${file.name}</span>
-        <span class="excalidraw-plus-item-date">Updated: ${new Date(file.modifiedTime).toLocaleString()}</span>
+  const listHtml = projectList.map(file => {
+    const isEditing = file.id === editingFileId;
+    return `
+      <div class="excalidraw-plus-item" data-id="${file.id}">
+        <div class="excalidraw-plus-item-info" id="info-${file.id}">
+          ${isEditing ? `
+            <input type="text" id="rename-input-${file.id}" class="excalidraw-plus-input" value="${file.name}" style="height: 28px; font-size: 13px; padding: 0 8px; width: 100%;">
+          ` : `
+            <span class="excalidraw-plus-item-name">${file.name}</span>
+            <span class="excalidraw-plus-item-date">Updated: ${new Date(file.modifiedTime).toLocaleString()}</span>
+          `}
+        </div>
+        <div class="excalidraw-plus-item-actions">
+          ${isEditing ? `
+            <button class="excalidraw-plus-action-icon-btn save-rename-btn" data-id="${file.id}" title="Save rename">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+            <button class="excalidraw-plus-action-icon-btn cancel-rename-btn" title="Cancel">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          ` : `
+            <button class="excalidraw-plus-action-icon-btn rename-btn" data-id="${file.id}" title="Rename drawing">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="excalidraw-plus-action-icon-btn delete delete-btn" data-id="${file.id}" title="Delete drawing">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          `}
+        </div>
       </div>
-      <div class="excalidraw-plus-item-actions">
-        <button class="excalidraw-plus-action-icon-btn delete delete-btn" data-id="${file.id}" title="Delete drawing">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   container.innerHTML = `<div class="excalidraw-plus-list">${listHtml}</div>`;
 
-  
   renderActiveProjectStatus();
 
-  
   projectList.forEach(file => {
-    document.getElementById(`info-${file.id}`).addEventListener('click', () => {
-      if (file.id === activeFileId) {
-        closeModal();
-        return;
-      }
-      showConfirmDialog(
-        "Load Drawing",
-        `Are you sure you want to load "${file.name}"? Current canvas data in this tab will be overwritten.`,
-        () => handleLoadProject(file.id, file.name)
-      );
-    });
+    const infoEl = document.getElementById(`info-${file.id}`);
+    const isEditing = file.id === editingFileId;
 
-    container.querySelector(`.delete-btn[data-id="${file.id}"]`).addEventListener('click', (e) => {
-      e.stopPropagation();
-      showConfirmDialog(
-        "Delete Drawing",
-        `Are you sure you want to delete "${file.name}" from Cloud?`,
-        () => handleDeleteProject(file.id)
-      );
-    });
+    if (!isEditing && infoEl) {
+      infoEl.addEventListener('click', () => {
+        if (file.id === activeFileId) {
+          closeModal();
+          return;
+        }
+        showConfirmDialog(
+          "Load Drawing",
+          `Are you sure you want to load "${file.name}"? Current canvas data in this tab will be overwritten.`,
+          () => handleLoadProject(file.id, file.name)
+        );
+      });
+    }
+
+    if (isEditing) {
+      const inputEl = document.getElementById(`rename-input-${file.id}`);
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.select();
+        inputEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            handleRenameProjectInList(file.id, file.name, inputEl);
+          }
+          if (e.key === 'Escape') {
+            editingFileId = null;
+            renderProjectList();
+          }
+        });
+      }
+
+      const saveBtn = container.querySelector(`.save-rename-btn[data-id="${file.id}"]`);
+      if (saveBtn) {
+        saveBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          handleRenameProjectInList(file.id, file.name, inputEl);
+        });
+      }
+
+      const cancelBtn = container.querySelector('.cancel-rename-btn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editingFileId = null;
+          renderProjectList();
+        });
+      }
+    } else {
+      const renameBtn = container.querySelector(`.rename-btn[data-id="${file.id}"]`);
+      if (renameBtn) {
+        renameBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editingFileId = file.id;
+          renderProjectList();
+        });
+      }
+
+      const deleteBtn = container.querySelector(`.delete-btn[data-id="${file.id}"]`);
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showConfirmDialog(
+            "Delete Drawing",
+            `Are you sure you want to delete "${file.name}" from Cloud?`,
+            () => handleDeleteProject(file.id)
+          );
+        });
+      }
+    }
   });
 }
 

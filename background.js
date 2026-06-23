@@ -249,6 +249,20 @@ async function deleteFile(token, fileId) {
   return true;
 }
 
+async function renameFile(token, fileId, name) {
+  const url = `https://www.googleapis.com/drive/v3/files/${fileId}`;
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: name })
+  });
+  if (!response.ok) throw new Error('Failed to rename file');
+  return await response.json();
+}
+
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const handleMessage = async () => {
@@ -298,6 +312,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       if (message.action === 'saveFile') {
         const result = await saveFile(token, message.name, message.content, message.fileId);
+        return { success: true, file: result };
+      }
+
+      if (message.action === 'renameFile') {
+        const result = await renameFile(token, message.fileId, message.name);
         return { success: true, file: result };
       }
 
