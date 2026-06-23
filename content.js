@@ -850,7 +850,7 @@ function init() {
     }
   }, true);
 
-  setInterval(handleAutosave, 900000);
+  setInterval(handleAutosave, 300000);
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', injectUI);
