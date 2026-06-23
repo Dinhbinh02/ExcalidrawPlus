@@ -195,13 +195,28 @@
 }
 
 .excalidraw-plus-action-icon-btn:hover {
-  background-color: var(--button-hover-bg, #e8eaed);
-  color: var(--text-primary-color);
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: var(--color-primary, #6965db) !important;
+}
+
+.theme--dark .excalidraw-plus-action-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--color-primary-light, #8582e5) !important;
 }
 
 .excalidraw-plus-action-icon-btn.delete:hover {
-  color: var(--color-critical, #ea4335);
-  background-color: rgba(234, 67, 53, 0.08);
+  color: var(--color-critical, #ea4335) !important;
+  background-color: rgba(234, 67, 53, 0.08) !important;
+}
+
+.excalidraw-plus-action-icon-btn.save-rename-btn:hover {
+  color: #2b8a3e !important;
+  background-color: rgba(43, 138, 62, 0.08) !important;
+}
+
+.excalidraw-plus-action-icon-btn.cancel-rename-btn:hover {
+  color: var(--color-critical, #ea4335) !important;
+  background-color: rgba(234, 67, 53, 0.08) !important;
 }
 
 
