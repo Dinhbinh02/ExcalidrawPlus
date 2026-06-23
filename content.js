@@ -164,6 +164,7 @@ async function checkUserStatus() {
       currentUser = response.user;
       renderUserUI();
       loadProjects();
+      checkCloudVersion();
     } else {
       currentUser = null;
       renderLoginUI();
@@ -650,6 +651,9 @@ function proceedWithSave(name, elements, state, files, fileId, forceNew, resolve
     if (response && response.success) {
       activeFileId = response.file.id;
       localStorage.setItem('excalidraw-plus-active-file-id', response.file.id);
+      if (response.file.modifiedTime) {
+        localStorage.setItem('excalidraw-plus-active-file-modified-time', response.file.modifiedTime);
+      }
       lastSavedElementsString = elements;
       updateLastSyncTime();
       showToast(forceNew ? "Created new copy on Cloud!" : "Drawing saved to Cloud!");
@@ -697,6 +701,9 @@ async function handleAutosave() {
     fileId: activeFileId
   }, (response) => {
     if (response && response.success) {
+      if (response.file && response.file.modifiedTime) {
+        localStorage.setItem('excalidraw-plus-active-file-modified-time', response.file.modifiedTime);
+      }
       lastSavedElementsString = elements;
       updateLastSyncTime();
       showToast("Autosaved to Cloud");
@@ -734,6 +741,9 @@ async function handleLoadProject(fileId, filename) {
       }
       
       localStorage.setItem('excalidraw-plus-active-file-id', fileId);
+      if (response.metadata && response.metadata.modifiedTime) {
+        localStorage.setItem('excalidraw-plus-active-file-modified-time', response.metadata.modifiedTime);
+      }
 
       window.location.reload();
     } else {
@@ -831,6 +841,72 @@ const observer = new MutationObserver((mutations) => {
       e.stopPropagation();
       openModal();
     });
+  }
+});
+
+
+let isBannerShowing = false;
+
+async function checkCloudVersion() {
+  if (!currentUser || !activeFileId || isBannerShowing) return;
+
+  chrome.runtime.sendMessage({
+    action: 'getFileMetadata',
+    fileId: activeFileId
+  }, (response) => {
+    if (response && response.success && response.metadata) {
+      const cloudTime = response.metadata.modifiedTime;
+      const localTime = localStorage.getItem('excalidraw-plus-active-file-modified-time');
+
+      if (!localTime) {
+        localStorage.setItem('excalidraw-plus-active-file-modified-time', cloudTime);
+        return;
+      }
+
+      if (new Date(cloudTime).getTime() > new Date(localTime).getTime() + 5000) {
+        showUpdateBanner(response.metadata.name);
+      }
+    }
+  });
+}
+
+function showUpdateBanner(fileName) {
+  if (document.getElementById('excalidraw-plus-update-banner')) return;
+  isBannerShowing = true;
+
+  const banner = document.createElement('div');
+  banner.id = 'excalidraw-plus-update-banner';
+  banner.className = 'excalidraw-plus-update-banner';
+  banner.innerHTML = `
+    <div class="excalidraw-plus-banner-content">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+      </svg>
+      <span>A newer version of <strong>${fileName}</strong> is available on Cloud.</span>
+    </div>
+    <div class="excalidraw-plus-banner-actions">
+      <button class="excalidraw-plus-btn excalidraw-plus-btn-primary" id="excalidraw-plus-banner-update-btn">Update Canvas</button>
+      <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-banner-dismiss-btn">Dismiss</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+
+  document.getElementById('excalidraw-plus-banner-update-btn').addEventListener('click', () => {
+    banner.remove();
+    isBannerShowing = false;
+    handleLoadProject(activeFileId, fileName);
+  });
+
+  document.getElementById('excalidraw-plus-banner-dismiss-btn').addEventListener('click', () => {
+    banner.remove();
+    localStorage.setItem('excalidraw-plus-active-file-modified-time', new Date().toISOString());
+    isBannerShowing = false;
+  });
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    checkCloudVersion();
   }
 });
 

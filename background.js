@@ -219,10 +219,10 @@ async function saveFile(token, name, content, fileId = null) {
   let url;
   let method;
   if (fileId) {
-    url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`;
+    url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart&fields=id,name,modifiedTime`;
     method = 'PATCH';
   } else {
-    url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+    url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime';
     method = 'POST';
   }
 
@@ -248,7 +248,6 @@ async function deleteFile(token, fileId) {
   if (!response.ok) throw new Error('Failed to delete file');
   return true;
 }
-
 async function renameFile(token, fileId, name) {
   const url = `https://www.googleapis.com/drive/v3/files/${fileId}`;
   const response = await fetch(url, {
@@ -260,6 +259,15 @@ async function renameFile(token, fileId, name) {
     body: JSON.stringify({ name: name })
   });
   if (!response.ok) throw new Error('Failed to rename file');
+  return await response.json();
+}
+
+async function getFileMetadata(token, fileId) {
+  const url = `https://www.googleapis.com/drive/v3/files/${fileId}?fields=id,name,modifiedTime,size`;
+  const response = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch file metadata');
   return await response.json();
 }
 
@@ -307,7 +315,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       if (message.action === 'getFile') {
         const content = await getFileContent(token, message.fileId);
-        return { success: true, content };
+        const metadata = await getFileMetadata(token, message.fileId).catch(() => null);
+        return { success: true, content, metadata };
+      }
+
+      if (message.action === 'getFileMetadata') {
+        const metadata = await getFileMetadata(token, message.fileId);
+        return { success: true, metadata };
       }
 
       if (message.action === 'saveFile') {
