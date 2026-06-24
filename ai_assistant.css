@@ -1,198 +1,419 @@
-/* AI Assistant Floating Button */
-.excalidraw-plus-ai-trigger {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  width: 48px !important;
-  height: 48px !important;
-  border-radius: 50% !important;
-  background-color: var(--color-primary, #6965db) !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: 0 4px 16px rgba(105, 101, 219, 0.3) !important;
-  cursor: pointer !important;
-  z-index: 99999 !important;
+/* ExcalidrawPlus AI Assistant Premium Glassmorphism Styles */
+
+.excalidraw-plus-ai-btn {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: transform 0.2s ease, background-color 0.2s ease !important;
+  gap: 8px !important;
+  background: var(--color-primary, #6965db) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 14px !important;
+  font-family: var(--ui-font, sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(105, 101, 219, 0.25) !important;
+  transition: all 0.2s ease !important;
+  height: 36px !important;
+  margin-left: 8px !important;
 }
 
-.excalidraw-plus-ai-trigger:hover {
-  transform: scale(1.08) !important;
-  background-color: var(--color-primary-darker, #504cb2) !important;
+.excalidraw-plus-ai-btn:hover {
+  background: var(--color-primary-darker, #534eb9) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(105, 101, 219, 0.35) !important;
 }
 
-/* AI Assistant Sidebar Panel */
-.excalidraw-plus-ai-panel {
+.excalidraw-plus-ai-btn svg {
+  animation: excalidrawPlusAiFloat 3s ease-in-out infinite;
+}
+
+@keyframes excalidrawPlusAiFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Modal Overlay & Dialog */
+.excalidraw-plus-ai-modal-overlay {
   position: fixed !important;
   top: 0 !important;
-  right: -360px !important;
-  width: 340px !important;
-  height: 100vh !important;
-  background-color: var(--island-bg-color, #ffffff) !important;
-  border-left: 1px solid var(--sidebar-border-color, #e0e0e0) !important;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.05) !important;
-  z-index: 99998 !important;
-  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(4px) !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999999 !important;
+}
+
+.excalidraw-plus-ai-modal-overlay.open {
+  display: flex !important;
+}
+
+.excalidraw-plus-ai-dialog {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 16px !important;
+  width: 550px !important;
+  max-width: 90vw !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden !important;
+  font-family: var(--ui-font, sans-serif) !important;
+  animation: excalidrawPlusScaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
   display: flex !important;
   flex-direction: column !important;
-  font-family: var(--ui-font, sans-serif) !important;
-  color: var(--text-primary-color, #1b1b1f) !important;
+  max-height: 85vh !important;
 }
 
-.excalidraw-plus-ai-panel.open {
-  right: 0 !important;
+.theme--dark .excalidraw-plus-ai-dialog {
+  background: rgba(28, 28, 35, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Header */
+@keyframes excalidrawPlusScaleUp {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .excalidraw-plus-ai-header {
-  padding: 16px !important;
-  border-bottom: 1px solid var(--sidebar-border-color, #e0e0e0) !important;
+  padding: 16px 20px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
 }
 
-.excalidraw-plus-ai-header h3 {
-  margin: 0 !important;
+.theme--dark .excalidraw-plus-ai-header {
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.excalidraw-plus-ai-title {
   font-size: 16px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
 }
 
-.excalidraw-plus-ai-header-actions {
+.excalidraw-plus-ai-close-btn {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  color: var(--icon-fill-color, #5f6368) !important;
+  padding: 4px !important;
+  border-radius: 6px !important;
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  justify-content: center !important;
 }
 
-/* Chat Area */
-.excalidraw-plus-ai-chat-history {
-  flex-grow: 1 !important;
-  overflow-y: auto !important;
-  padding: 16px !important;
+.excalidraw-plus-ai-close-btn:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+.theme--dark .excalidraw-plus-ai-close-btn:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Config Section (Keys & Model) */
+.excalidraw-plus-ai-config-section {
+  padding: 14px 20px !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 12px !important;
 }
 
+.theme--dark .excalidraw-plus-ai-config-section {
+  background: rgba(255, 255, 255, 0.01) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.excalidraw-plus-ai-config-row {
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+
+.excalidraw-plus-ai-field-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary-color, #5f6368) !important;
+  width: 90px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Searchable Dropdown */
+.excalidraw-plus-ai-dropdown-wrapper {
+  position: relative !important;
+  flex-grow: 1 !important;
+}
+
+.excalidraw-plus-ai-dropdown-trigger {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  background: var(--island-bg-color, #ffffff) !important;
+  border: 1px solid var(--sidebar-border-color, #dcdcdc) !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  text-align: left !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.excalidraw-plus-ai-dropdown-menu {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: var(--island-bg-color, #ffffff) !important;
+  border: 1px solid var(--sidebar-border-color, #dcdcdc) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  z-index: 10000 !important;
+  display: none !important;
+  flex-direction: column !important;
+  max-height: 250px !important;
+  overflow: hidden !important;
+}
+
+.excalidraw-plus-ai-dropdown-menu.open {
+  display: flex !important;
+}
+
+.excalidraw-plus-ai-dropdown-search {
+  padding: 8px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.theme--dark .excalidraw-plus-ai-dropdown-search {
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.excalidraw-plus-ai-dropdown-search input {
+  width: 100% !important;
+  padding: 6px 10px !important;
+  border: 1px solid var(--sidebar-border-color, #dcdcdc) !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  outline: none !important;
+  background: var(--island-bg-color, #ffffff) !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
+}
+
+.excalidraw-plus-ai-dropdown-list {
+  overflow-y: auto !important;
+  flex-grow: 1 !important;
+  padding: 4px 0 !important;
+}
+
+.excalidraw-plus-ai-dropdown-item {
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
+  cursor: pointer !important;
+}
+
+.excalidraw-plus-ai-dropdown-item:hover {
+  background: var(--button-hover-bg, rgba(0, 0, 0, 0.04)) !important;
+}
+
+.excalidraw-plus-ai-dropdown-item.selected {
+  background: rgba(105, 101, 219, 0.1) !important;
+  color: var(--color-primary, #6965db) !important;
+  font-weight: 600 !important;
+}
+
+/* API Key Textarea */
+.excalidraw-plus-ai-keys-textarea {
+  width: 100% !important;
+  height: 60px !important;
+  padding: 8px 12px !important;
+  background: var(--island-bg-color, #ffffff) !important;
+  border: 1px solid var(--sidebar-border-color, #dcdcdc) !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-family: monospace !important;
+  resize: none !important;
+  outline: none !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
+}
+
+.excalidraw-plus-ai-keys-textarea::placeholder {
+  font-family: var(--ui-font, sans-serif) !important;
+  color: #888888 !important;
+}
+
+/* Chat Body */
+.excalidraw-plus-ai-chat-body {
+  flex-grow: 1 !important;
+  padding: 20px !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+  min-height: 200px !important;
+  max-height: 400px !important;
+}
+
+.theme--dark .excalidraw-plus-ai-chat-body {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
 .excalidraw-plus-ai-msg {
+  display: flex !important;
+  flex-direction: column !important;
   max-width: 85% !important;
   padding: 10px 14px !important;
   border-radius: 12px !important;
-  font-size: 13.5px !important;
-  line-height: 1.4 !important;
-  word-break: break-word !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
 }
 
 .excalidraw-plus-ai-msg.user {
-  background-color: var(--color-primary, #6965db) !important;
-  color: #ffffff !important;
   align-self: flex-end !important;
+  background: var(--color-primary, #6965db) !important;
+  color: #ffffff !important;
   border-bottom-right-radius: 4px !important;
 }
 
 .excalidraw-plus-ai-msg.assistant {
-  background-color: var(--button-hover-bg, rgba(0, 0, 0, 0.03)) !important;
-  color: var(--text-primary-color, #1b1b1f) !important;
   align-self: flex-start !important;
+  background: var(--island-bg-color, #ffffff) !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
+  border: 1px solid var(--sidebar-border-color, #dcdcdc) !important;
   border-bottom-left-radius: 4px !important;
-  border: 1px solid var(--sidebar-border-color, #e0e0e0) !important;
-}
-
-.excalidraw-plus-ai-msg.error {
-  background-color: rgba(234, 67, 53, 0.08) !important;
-  color: var(--color-critical, #ea4335) !important;
-  align-self: center !important;
-  text-align: center !important;
-  border-radius: 8px !important;
-  font-size: 12.5px !important;
-}
-
-/* Input Area */
-.excalidraw-plus-ai-input-area {
-  padding: 16px !important;
-  border-top: 1px solid var(--sidebar-border-color, #e0e0e0) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-}
-
-.excalidraw-plus-ai-textarea {
-  width: 100% !important;
-  height: 60px !important;
-  border: 1px solid var(--sidebar-border-color, #e0e0e0) !important;
-  border-radius: 8px !important;
-  padding: 8px 12px !important;
-  font-size: 13.5px !important;
-  font-family: inherit !important;
-  resize: none !important;
-  background-color: transparent !important;
-  color: inherit !important;
-  outline: none !important;
-}
-
-.excalidraw-plus-ai-textarea:focus {
-  border-color: var(--color-primary, #6965db) !important;
-}
-
-.excalidraw-plus-ai-send-btn {
-  align-self: flex-end !important;
-  padding: 6px 16px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-}
-
-/* Key settings panel */
-.excalidraw-plus-ai-keys-modal {
-  padding: 16px !important;
-  border-bottom: 1px solid var(--sidebar-border-color, #e0e0e0) !important;
-  background-color: var(--button-hover-bg, rgba(0, 0, 0, 0.01)) !important;
-  display: none !important;
-  flex-direction: column !important;
-  gap: 10px !important;
-}
-
-.excalidraw-plus-ai-keys-modal.open {
-  display: flex !important;
-}
-
-.excalidraw-plus-ai-keys-textarea {
-  width: 100% !important;
-  height: 50px !important;
-  font-size: 12px !important;
-  border: 1px solid var(--sidebar-border-color, #e0e0e0) !important;
-  border-radius: 6px !important;
-  padding: 6px !important;
-  resize: none !important;
-  outline: none !important;
-  background: transparent !important;
-  color: inherit !important;
-}
-
-.excalidraw-plus-ai-keys-label {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: var(--text-primary-color) !important;
-}
-
-/* Dark mode overrides */
-.theme--dark .excalidraw-plus-ai-panel {
-  background-color: #1e1e24 !important;
-  border-left-color: #3b3b44 !important;
-  color: #ececf1 !important;
-}
-
-.theme--dark .excalidraw-plus-ai-header,
-.theme--dark .excalidraw-plus-ai-input-area,
-.theme--dark .excalidraw-plus-ai-keys-modal {
-  border-color: #3b3b44 !important;
 }
 
 .theme--dark .excalidraw-plus-ai-msg.assistant {
-  background-color: rgba(255, 255, 255, 0.03) !important;
+  background: #232329 !important;
   border-color: #3b3b44 !important;
+}
+
+.excalidraw-plus-ai-msg code {
+  background: rgba(0, 0, 0, 0.05) !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  font-family: monospace !important;
+  font-size: 12px !important;
+}
+
+.theme--dark .excalidraw-plus-ai-msg code {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.excalidraw-plus-ai-msg pre {
+  margin: 8px 0 0 0 !important;
+  padding: 10px !important;
+  background: #1e1e24 !important;
+  color: #ececf1 !important;
+  border-radius: 6px !important;
+  font-family: monospace !important;
+  font-size: 11px !important;
+  overflow-x: auto !important;
+}
+
+.excalidraw-plus-ai-msg strong {
+  font-weight: 700 !important;
+}
+
+/* Chat Input & Suggestions */
+.excalidraw-plus-ai-footer {
+  padding: 16px 20px !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.theme--dark .excalidraw-plus-ai-footer {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.excalidraw-plus-ai-suggestions {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+.excalidraw-plus-ai-suggest-chip {
+  padding: 6px 12px !important;
+  background: var(--button-hover-bg, rgba(0, 0, 0, 0.04)) !important;
+  border: 1px solid var(--sidebar-border-color, #dcdcdc) !important;
+  border-radius: 100px !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  color: var(--text-primary-color, #5f6368) !important;
+  transition: all 0.15s ease !important;
+}
+
+.excalidraw-plus-ai-suggest-chip:hover {
+  background: rgba(105, 101, 219, 0.08) !important;
+  border-color: var(--color-primary, #6965db) !important;
+  color: var(--color-primary, #6965db) !important;
+}
+
+.excalidraw-plus-ai-input-row {
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.excalidraw-plus-ai-chat-input {
+  flex-grow: 1 !important;
+  padding: 10px 14px !important;
+  background: var(--island-bg-color, #ffffff) !important;
+  border: 1px solid var(--sidebar-border-color, #dcdcdc) !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  outline: none !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
+}
+
+.excalidraw-plus-ai-send-btn {
+  background: var(--color-primary, #6965db) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(105, 101, 219, 0.2) !important;
+  flex-shrink: 0 !important;
+}
+
+.excalidraw-plus-ai-send-btn:hover {
+  background: var(--color-primary-darker, #534eb9) !important;
+}
+
+.excalidraw-plus-ai-send-btn:disabled {
+  background: #cccccc !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+.theme--dark .excalidraw-plus-ai-send-btn:disabled {
+  background: #3b3b44 !important;
+  color: #777777 !important;
 }
