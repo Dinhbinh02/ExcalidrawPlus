@@ -857,13 +857,21 @@ async function checkCloudVersion() {
       const cloudTime = response.metadata.modifiedTime;
       const localTime = localStorage.getItem('excalidraw-plus-active-file-modified-time');
 
-      if (!localTime) {
-        localStorage.setItem('excalidraw-plus-active-file-modified-time', cloudTime);
-        return;
-      }
+      const elements = localStorage.getItem('excalidraw');
+      const isCanvasEmpty = !elements || elements === "[]" || elements === "";
 
-      if (new Date(cloudTime).getTime() > new Date(localTime).getTime() + 5000) {
-        showUpdateBanner(response.metadata.name);
+      
+      const shouldUpdate = !localTime || (new Date(cloudTime).getTime() > new Date(localTime).getTime() + 5000);
+
+      if (shouldUpdate) {
+        
+        if (isCanvasEmpty || elements === lastSavedElementsString) {
+          
+          handleLoadProject(activeFileId, response.metadata.name);
+        } else {
+          
+          showUpdateBanner(response.metadata.name);
+        }
       }
     }
   });
