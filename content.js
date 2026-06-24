@@ -1,5 +1,31 @@
 console.log("Excalidraw+ extension active: Excalifont overridden and Google Drive Sync enabled.");
 
+(function() {
+  const style = document.createElement('style');
+  style.id = 'excalidraw-plus-custom-fonts';
+  const fontTtfUrl = chrome.runtime.getURL('fonts/DFVN-Excalifont.ttf');
+  const fontOtfUrl = chrome.runtime.getURL('fonts/DFVN-Excalifont.otf');
+  style.textContent = `
+    @font-face {
+      font-family: 'Excalifont';
+      src: url('${fontTtfUrl}') format('truetype'),
+           url('${fontOtfUrl}') format('opentype') !important;
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Virgil';
+      src: url('${fontTtfUrl}') format('truetype'),
+           url('${fontOtfUrl}') format('opentype') !important;
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  `;
+  document.documentElement.appendChild(style);
+})();
+
 let currentUser = null;
 let projectList = [];
 let activeFileId = localStorage.getItem('excalidraw-plus-active-file-id') || null;

@@ -1,8 +1,8 @@
 
 @font-face {
   font-family: 'Excalifont';
-  src: url('chrome-extension://__MSG_@@extension_id__/fonts/DFVN-Excalifont.ttf') format('truetype'),
-    url('chrome-extension://__MSG_@@extension_id__/fonts/DFVN-Excalifont.otf') format('opentype');
+  src: url('fonts/DFVN-Excalifont.ttf') format('truetype'),
+    url('fonts/DFVN-Excalifont.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

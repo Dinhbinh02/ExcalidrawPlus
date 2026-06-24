@@ -37,7 +37,11 @@
     {
       "matches": ["https://excalidraw.com/*"],
       "css": ["content.css", "ai_assistant.css"],
-      "js": ["content.js", "ai_assistant.js"],
+      "js": [
+        "mermaid-to-excalidraw.production.min.js",
+        "content.js",
+        "ai_assistant.js"
+      ],
       "run_at": "document_start"
     }
   ],
