@@ -35,7 +35,7 @@
   "content_scripts": [
     {
       "matches": ["https://excalidraw.com/*"],
-      "css": ["content.css"],
+      "css": ["content.css", "ai_assistant.css"],
       "js": ["content.js"],
       "run_at": "document_start"
     }
