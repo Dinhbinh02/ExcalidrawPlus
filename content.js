@@ -73,7 +73,7 @@ function showConfirmDialog(title, message, onConfirm) {
 }
 
 
-function showLoadingOverlay(message = "Loading drawing from Cloud...") {
+function showLoadingOverlay(message = "Loading project from Cloud...") {
   let loader = document.getElementById('excalidraw-plus-loader');
   if (!loader) {
     loader = document.createElement('div');
@@ -526,13 +526,14 @@ function renderProjectList() {
 }
 
 async function handleCreateNewProject() {
+  showLoadingOverlay("Creating new project...");
   if (currentUser) {
     const elements = localStorage.getItem('excalidraw');
     if (elements && elements !== "[]" && elements !== "") {
-      showToast("Saving current project before creating new...");
-      const saved = await handleSaveProject();
+      const saved = await handleSaveProject(false, true);
       if (!saved) {
         showToast("Could not save current drawing. Please save manually first.");
+        hideLoadingOverlay();
         return;
       }
     }
@@ -540,18 +541,18 @@ async function handleCreateNewProject() {
 
   closeModal();
 
-
   localStorage.removeItem('excalidraw-plus-active-file-id');
   activeFileId = null;
   renderActiveProjectStatus();
 
-
   let clearBtn = document.querySelector('[data-testid="clear-canvas-button"]');
   if (clearBtn) {
     clearBtn.click();
+    setTimeout(() => {
+      hideLoadingOverlay();
+    }, 500);
     return;
   }
-
 
   const menuTrigger = document.querySelector('.dropdown-menu-trigger, button[aria-label="Main menu"], button[aria-label="Menu"]');
   if (menuTrigger) {
@@ -560,8 +561,10 @@ async function handleCreateNewProject() {
       clearBtn = document.querySelector('[data-testid="clear-canvas-button"]');
       if (clearBtn) {
         clearBtn.click();
+        setTimeout(() => {
+          hideLoadingOverlay();
+        }, 500);
       } else {
-
         localStorage.removeItem('excalidraw');
         localStorage.removeItem('excalidraw-files');
         const cleanState = {
@@ -574,7 +577,6 @@ async function handleCreateNewProject() {
       }
     }, 100);
   } else {
-
     localStorage.removeItem('excalidraw');
     localStorage.removeItem('excalidraw-files');
     const cleanState = {
@@ -587,7 +589,7 @@ async function handleCreateNewProject() {
   }
 }
 
-async function handleSaveProject(forceNew = false) {
+async function handleSaveProject(forceNew = false, silent = false) {
   return new Promise((resolve) => {
     const nameInput = document.getElementById('excalidraw-plus-filename');
     const name = nameInput ? nameInput.value.trim() : getActiveFilename();
@@ -613,12 +615,12 @@ async function handleSaveProject(forceNew = false) {
       showToast("Cannot overwrite a cloud project with an empty canvas.");
       resolve(false);
     } else {
-      proceedWithSave(name, elements, state, files, fileId, forceNew, resolve);
+      proceedWithSave(name, elements, state, files, fileId, forceNew, resolve, silent);
     }
   });
 }
 
-function proceedWithSave(name, elements, state, files, fileId, forceNew, resolve) {
+function proceedWithSave(name, elements, state, files, fileId, forceNew, resolve, silent = false) {
   const content = {
     elements: JSON.parse(elements),
     appState: state ? JSON.parse(state) : {},
@@ -635,7 +637,9 @@ function proceedWithSave(name, elements, state, files, fileId, forceNew, resolve
     saveBtn.disabled = true;
   }
 
-  showToast("Saving to Cloud...");
+  if (!silent) {
+    showToast("Saving to Cloud...");
+  }
 
   chrome.runtime.sendMessage({
     action: 'saveFile',
@@ -656,7 +660,9 @@ function proceedWithSave(name, elements, state, files, fileId, forceNew, resolve
       }
       lastSavedElementsString = elements;
       updateLastSyncTime();
-      showToast(forceNew ? "Created new copy on Cloud!" : "Drawing saved to Cloud!");
+      if (!silent) {
+        showToast(forceNew ? "Created new copy on Cloud!" : "Drawing saved to Cloud!");
+      }
       try {
         const stateObj = JSON.parse(localStorage.getItem('excalidraw-state') || '{}');
         stateObj.name = name;
@@ -666,7 +672,9 @@ function proceedWithSave(name, elements, state, files, fileId, forceNew, resolve
       renderActiveProjectStatus();
       resolve(true);
     } else {
-      showToast("Save failed: " + (response ? response.error : "Connection error"));
+      if (!silent) {
+        showToast("Save failed: " + (response ? response.error : "Connection error"));
+      }
       resolve(false);
     }
   });
@@ -713,7 +721,7 @@ async function handleAutosave() {
 
 async function handleLoadProject(fileId, filename) {
   closeModal();
-  showLoadingOverlay("Loading drawing...");
+  showLoadingOverlay("Loading project...");
 
   chrome.runtime.sendMessage({
     action: 'getFile',
@@ -827,19 +835,28 @@ const observer = new MutationObserver((mutations) => {
   }
 
   const plusBanner = document.querySelector('.plus-banner');
-  if (plusBanner && !plusBanner.classList.contains('excalidraw-plus-processed')) {
-    plusBanner.classList.add('excalidraw-plus-processed');
+  if (plusBanner) {
+    if (!plusBanner.classList.contains('excalidraw-plus-processed')) {
+      plusBanner.classList.add('excalidraw-plus-processed');
 
-    plusBanner.removeAttribute('href');
-    plusBanner.removeAttribute('target');
-    plusBanner.removeAttribute('rel');
-    plusBanner.style.cursor = 'pointer';
+      plusBanner.removeAttribute('href');
+      plusBanner.removeAttribute('target');
+      plusBanner.removeAttribute('rel');
+      plusBanner.style.cursor = 'pointer';
 
-    plusBanner.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      openModal();
-    });
+      plusBanner.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openModal();
+      });
+    }
+
+    const activeProject = activeFileId ? projectList.find(p => p.id === activeFileId) : null;
+    const activeName = activeProject ? activeProject.name : (activeFileId ? getActiveFilename() : null);
+    const expectedText = activeFileId && activeName ? activeName : "Excalidraw+";
+    if (plusBanner.textContent !== expectedText) {
+      plusBanner.textContent = expectedText;
+    }
   }
 });
 
@@ -952,6 +969,54 @@ function init() {
           handleSaveProject();
         }
       }
+    }
+
+    // Intercept Ctrl+Z / Cmd+Z for Undo
+    if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === 'z') {
+      const target = event.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      const undoBtn = document.querySelector('button[data-testid="button-undo"]');
+      if (undoBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        undoBtn.click();
+      }
+    }
+
+    // Intercept Ctrl+Y / Cmd+Y or Ctrl+Shift+Z / Cmd+Shift+Z for Redo
+    if (
+      ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') ||
+      ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'z')
+    ) {
+      const target = event.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      const redoBtn = document.querySelector('button[data-testid="button-redo"]');
+      if (redoBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        redoBtn.click();
+      }
+    }
+  }, true);
+
+  // Prevent Excalidraw text editor from losing focus/closing when switching tabs
+  window.addEventListener('blur', (event) => {
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT' || activeEl.classList.contains('excalidraw-wysiwyg'))) {
+      // Stop the window-level blur event from propagating to Excalidraw's handlers
+      event.stopImmediatePropagation();
+    }
+  }, true);
+
+  window.addEventListener('focusout', (event) => {
+    const activeEl = document.activeElement;
+    // Only stop propagation if we are losing focus to outside the document (tab switch)
+    if (event.relatedTarget === null && activeEl && (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT' || activeEl.classList.contains('excalidraw-wysiwyg'))) {
+      event.stopImmediatePropagation();
     }
   }, true);
 
