@@ -1195,12 +1195,28 @@ ONLY use Tier 2 when the user explicitly asks for that chart type AND it cannot 
   ───────────────────────────────────────────── */
   function checkAndInjectFloatingButton() {
     if (document.getElementById('excalidraw-plus-ai-trigger-btn')) return;
-    const plusBanner = document.querySelector('.plus-banner');
+    const plusBanner = document.querySelector('a.plus-banner');
     if (plusBanner && plusBanner.parentNode) {
       const aiBtn = document.createElement('button');
       aiBtn.id = 'excalidraw-plus-ai-trigger-btn';
-      aiBtn.className = plusBanner.className;
+      // Copy classes but exclude 'plus-banner' to prevent Excalidraw from overwriting our button's text
+      aiBtn.className = [...plusBanner.classList]
+        .filter(c => c !== 'plus-banner')
+        .join(' ');
       aiBtn.innerHTML = '<span>Assistant</span>';
+      // Mirror the computed styles from the original .plus-banner so the button looks identical
+      const cs = window.getComputedStyle(plusBanner);
+      [
+        'display', 'alignItems', 'justifyContent',
+        'height', 'minHeight', 'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+        'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+        'background', 'backgroundColor', 'backgroundImage',
+        'color', 'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing',
+        'border', 'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+        'borderRadius', 'borderColor', 'borderStyle', 'borderWidth',
+        'boxShadow', 'outline', 'opacity', 'verticalAlign',
+        'gap', 'flexDirection',
+      ].forEach(prop => { aiBtn.style[prop] = cs[prop]; });
       aiBtn.style.cursor = 'pointer';
       aiBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openAiModal(); });
       plusBanner.parentNode.insertBefore(aiBtn, plusBanner);
