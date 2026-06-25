@@ -1,0 +1,785 @@
+/* ============================================================
+   ExcalidrawPlus AI Assistant — Fully Custom CSS
+   No Excalidraw native modal classes used.
+   ============================================================ */
+
+/* ── Trigger Button ── */
+.excalidraw-plus-ai-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: var(--color-primary, #6965db) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 14px !important;
+  font-family: var(--ui-font, sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(105, 101, 219, 0.3) !important;
+  transition: all 0.2s ease !important;
+  height: 36px !important;
+  margin-left: 8px !important;
+}
+
+.excalidraw-plus-ai-btn:hover {
+  background: var(--color-primary-darker, #534eb9) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(105, 101, 219, 0.4) !important;
+}
+
+/* ─────────────────────────────────────────────
+   MODAL WRAPPER — full-screen flex centering
+───────────────────────────────────────────── */
+.ep-ai-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  /* inherit excalidraw CSS vars via .excalidraw parent */
+}
+
+.ep-ai-modal.open {
+  display: flex !important;
+}
+
+/* Backdrop — dark blurred overlay */
+.ep-ai-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  z-index: 0 !important;
+}
+
+/* ─────────────────────────────────────────────
+   DIALOG BOX
+───────────────────────────────────────────── */
+.ep-ai-dialog {
+  position: relative !important;
+  z-index: 1 !important;
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  width: 900px !important;
+  max-width: 95vw !important;
+  height: 600px !important;
+  max-height: 92vh !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  font-family: var(--ui-font, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif) !important;
+  animation: epAiDialogIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Dark mode */
+.theme--dark .ep-ai-dialog {
+  background: #1c1c23 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5) !important;
+}
+
+@keyframes epAiDialogIn {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+/* ── Header ── */
+.ep-ai-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 14px 18px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+  flex-shrink: 0 !important;
+}
+
+.theme--dark .ep-ai-header {
+  border-bottom-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.ep-ai-title-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--text-primary-color, #1b1b1f) !important;
+}
+
+.ep-ai-title-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  position: relative !important;
+}
+
+/* ── Settings Gear Button ── */
+.ep-ai-settings-btn {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  color: #888 !important;
+  padding: 6px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.15s, color 0.15s !important;
+}
+
+.ep-ai-settings-btn:hover,
+.ep-ai-settings-btn.active {
+  background: rgba(105, 101, 219, 0.1) !important;
+  color: var(--color-primary, #6965db) !important;
+}
+
+/* ── Close Button ── */
+.ep-ai-close-btn {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  color: #888 !important;
+  padding: 6px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.15s !important;
+}
+
+.ep-ai-close-btn:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #444 !important;
+}
+
+.theme--dark .ep-ai-close-btn:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #ccc !important;
+}
+
+/* ── Settings Popup ── */
+.ep-ai-settings-popup {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  width: 300px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15) !important;
+  padding: 16px !important;
+  z-index: 10 !important;
+  display: none !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  animation: epPopupIn 0.16s ease !important;
+}
+
+.theme--dark .ep-ai-settings-popup {
+  background: #232329 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ep-ai-settings-popup.open {
+  display: flex !important;
+}
+
+@keyframes epPopupIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ep-ai-settings-popup-title {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+  color: #888 !important;
+}
+
+.ep-ai-settings-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.ep-ai-settings-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary-color, #444) !important;
+}
+
+/* Model dropdown */
+.ep-ai-model-wrapper { position: relative !important; }
+
+.ep-ai-model-trigger {
+  width: 100% !important;
+  padding: 8px 10px !important;
+  background: #f5f5f7 !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  text-align: left !important;
+  color: #1b1b1f !important;
+  cursor: pointer !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-family: inherit !important;
+  transition: border-color 0.15s !important;
+  box-sizing: border-box !important;
+}
+
+.ep-ai-model-trigger:hover { border-color: var(--color-primary, #6965db) !important; }
+
+.theme--dark .ep-ai-model-trigger {
+  background: #2d2d35 !important;
+  border-color: #3b3b44 !important;
+  color: #ececf1 !important;
+}
+
+.ep-ai-model-menu {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  z-index: 20 !important;
+  display: none !important;
+  flex-direction: column !important;
+  max-height: 200px !important;
+  overflow: hidden !important;
+}
+
+.theme--dark .ep-ai-model-menu {
+  background: #232329 !important;
+  border-color: #3b3b44 !important;
+}
+
+.ep-ai-model-menu.open { display: flex !important; }
+
+.ep-ai-model-search-wrap {
+  padding: 6px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.ep-ai-model-search-wrap input {
+  width: 100% !important;
+  padding: 5px 8px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  outline: none !important;
+  background: #fff !important;
+  color: #1b1b1f !important;
+  box-sizing: border-box !important;
+}
+
+.ep-ai-model-list { overflow-y: auto !important; flex: 1 !important; padding: 4px 0 !important; }
+
+.ep-ai-model-item {
+  padding: 7px 10px !important;
+  font-size: 12px !important;
+  color: #1b1b1f !important;
+  cursor: pointer !important;
+  transition: background 0.1s !important;
+}
+
+.ep-ai-model-item:hover { background: rgba(0, 0, 0, 0.04) !important; }
+
+.ep-ai-model-item.selected {
+  background: rgba(105, 101, 219, 0.1) !important;
+  color: var(--color-primary, #6965db) !important;
+  font-weight: 600 !important;
+}
+
+/* API keys textarea */
+.ep-ai-keys-textarea {
+  width: 100% !important;
+  height: 72px !important;
+  padding: 8px 10px !important;
+  background: #f5f5f7 !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-family: monospace !important;
+  resize: none !important;
+  outline: none !important;
+  color: #1b1b1f !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.15s !important;
+}
+
+.ep-ai-keys-textarea:focus { border-color: var(--color-primary, #6965db) !important; }
+
+.theme--dark .ep-ai-keys-textarea {
+  background: #2d2d35 !important;
+  border-color: #3b3b44 !important;
+  color: #ececf1 !important;
+}
+
+.ep-ai-keys-textarea::placeholder { color: #aaa !important; }
+
+.ep-ai-settings-save-btn {
+  padding: 8px 14px !important;
+  background: var(--color-primary, #6965db) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  align-self: flex-end !important;
+  transition: background 0.15s !important;
+}
+
+.ep-ai-settings-save-btn:hover { background: var(--color-primary-darker, #534eb9) !important; }
+
+/* ─────────────────────────────────────────────
+   TWO-COLUMN BODY
+───────────────────────────────────────────── */
+.ep-ai-body {
+  flex: 1 !important;
+  display: flex !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ── Chat Panel (Left 42%) ── */
+.ep-ai-chat-panel {
+  width: 42% !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.07) !important;
+  min-height: 0 !important;
+}
+
+.theme--dark .ep-ai-chat-panel {
+  border-right-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Chat messages */
+.ep-ai-chat-messages {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.ep-ai-msg {
+  max-width: 88% !important;
+  padding: 9px 13px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+
+.ep-ai-msg.user {
+  align-self: flex-end !important;
+  background: var(--color-primary, #6965db) !important;
+  color: #fff !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.ep-ai-msg.assistant {
+  align-self: flex-start !important;
+  background: #f0f0f5 !important;
+  color: #1b1b1f !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  border-bottom-left-radius: 3px !important;
+}
+
+.theme--dark .ep-ai-msg.assistant {
+  background: #2a2a33 !important;
+  color: #ececf1 !important;
+  border-color: #3b3b44 !important;
+}
+
+.ep-ai-msg.assistant.ep-ai-msg-clickable {
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.ep-ai-msg.assistant.ep-ai-msg-clickable:hover {
+  background: #e6e6f0 !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+.theme--dark .ep-ai-msg.assistant.ep-ai-msg-clickable:hover {
+  background: #363642 !important;
+  border-color: #4a4a58 !important;
+}
+
+.ep-ai-msg.assistant.ep-ai-msg-active {
+  background: #e8e8ff !important;
+  border-color: #6965db !important;
+  box-shadow: 0 0 0 2px rgba(105, 101, 219, 0.2) !important;
+}
+
+.theme--dark .ep-ai-msg.assistant.ep-ai-msg-active {
+  background: #1d1b33 !important;
+  border-color: #6965db !important;
+  box-shadow: 0 0 0 2px rgba(105, 101, 219, 0.3) !important;
+}
+
+.ep-ai-msg code {
+  background: rgba(0, 0, 0, 0.08) !important;
+  padding: 2px 5px !important;
+  border-radius: 4px !important;
+  font-family: monospace !important;
+  font-size: 11px !important;
+}
+
+.ep-ai-msg pre {
+  margin: 8px 0 0 !important;
+  padding: 10px !important;
+  background: #1e1e28 !important;
+  color: #d4d4e8 !important;
+  border-radius: 7px !important;
+  font-family: monospace !important;
+  font-size: 11px !important;
+  overflow-x: auto !important;
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
+}
+
+/* Chat footer */
+.ep-ai-chat-footer {
+  padding: 12px 14px !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  flex-shrink: 0 !important;
+}
+
+.theme--dark .ep-ai-chat-footer {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Chips */
+.ep-ai-chips {
+  display: flex !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+}
+
+.ep-ai-chip {
+  padding: 5px 10px !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 100px !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+  color: #5f6368 !important;
+  transition: all 0.15s !important;
+  white-space: nowrap !important;
+  user-select: none !important;
+}
+
+.ep-ai-chip:hover {
+  background: rgba(105, 101, 219, 0.08) !important;
+  border-color: var(--color-primary, #6965db) !important;
+  color: var(--color-primary, #6965db) !important;
+}
+
+/* Input row */
+.ep-ai-input-row {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.ep-ai-input {
+  flex: 1 !important;
+  padding: 10px 13px !important;
+  background: #f5f5f7 !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  outline: none !important;
+  color: #1b1b1f !important;
+  font-family: inherit !important;
+  transition: border-color 0.15s !important;
+}
+
+.ep-ai-input:focus {
+  border-color: var(--color-primary, #6965db) !important;
+  background: #fff !important;
+}
+
+.theme--dark .ep-ai-input {
+  background: #2a2a33 !important;
+  border-color: #3b3b44 !important;
+  color: #ececf1 !important;
+}
+
+.ep-ai-send-btn {
+  background: var(--color-primary, #6965db) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: background 0.15s, transform 0.15s !important;
+}
+
+.ep-ai-send-btn:hover:not(:disabled) {
+  background: var(--color-primary-darker, #534eb9) !important;
+  transform: scale(1.05) !important;
+}
+
+.ep-ai-send-btn:disabled { background: #ccc !important; cursor: not-allowed !important; }
+
+/* ── Preview Panel (Right) ── */
+.ep-ai-preview-panel {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Preview toolbar */
+.ep-ai-preview-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  flex-shrink: 0 !important;
+}
+
+.theme--dark .ep-ai-preview-toolbar {
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ep-ai-preview-label {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: #aaa !important;
+}
+
+.ep-ai-view-tabs {
+  display: flex !important;
+  gap: 2px !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 8px !important;
+  padding: 2px !important;
+}
+
+.ep-ai-view-tab {
+  padding: 4px 12px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  color: #888 !important;
+  background: transparent !important;
+  font-family: inherit !important;
+  transition: all 0.15s !important;
+}
+
+.ep-ai-view-tab.active {
+  background: #fff !important;
+  color: #1b1b1f !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme--dark .ep-ai-view-tab.active {
+  background: #2a2a33 !important;
+  color: #ececf1 !important;
+}
+
+.ep-ai-new-diagram-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 6px 12px !important;
+  background: transparent !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #5f6368 !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  transition: all 0.15s !important;
+}
+
+.ep-ai-new-diagram-btn:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Preview canvas */
+.ep-ai-preview-canvas {
+  flex: 1 !important;
+  overflow: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #f8f8fb !important;
+}
+
+.theme--dark .ep-ai-preview-canvas { background: #16161d !important; }
+
+.ep-ai-preview-placeholder {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  color: #bbb !important;
+  font-size: 13px !important;
+  text-align: center !important;
+}
+
+.ep-ai-preview-code {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: auto !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  font-family: monospace !important;
+  font-size: 12px !important;
+  color: #1b1b1f !important;
+  white-space: pre-wrap !important;
+  background: transparent !important;
+  margin: 0 !important;
+}
+
+.theme--dark .ep-ai-preview-code { color: #d4d4e8 !important; }
+
+.ep-ai-preview-svg-wrap {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+}
+
+.ep-ai-preview-svg-wrap svg {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+/* ── Bottom bar ── */
+.ep-ai-bottom-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 18px !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.07) !important;
+  flex-shrink: 0 !important;
+}
+
+.theme--dark .ep-ai-bottom-bar {
+  border-top-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.ep-ai-status-text {
+  font-size: 12px !important;
+  color: #aaa !important;
+}
+
+.ep-ai-insert-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 9px 20px !important;
+  background: var(--color-primary, #6965db) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  transition: all 0.15s !important;
+  box-shadow: 0 2px 8px rgba(105, 101, 219, 0.3) !important;
+}
+
+.ep-ai-insert-btn:hover:not(:disabled) {
+  background: var(--color-primary-darker, #534eb9) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(105, 101, 219, 0.4) !important;
+}
+
+.ep-ai-insert-btn:disabled {
+  background: #ccc !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.theme--dark .ep-ai-insert-btn:disabled {
+  background: #3b3b44 !important;
+  color: #666 !important;
+}
+
+/* ── Typing indicator ── */
+.ep-ai-typing {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 10px 14px !important;
+}
+
+.ep-ai-typing span {
+  width: 7px !important;
+  height: 7px !important;
+  background: var(--color-primary, #6965db) !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  animation: epTypingBounce 1.2s infinite ease-in-out !important;
+}
+
+.ep-ai-typing span:nth-child(2) { animation-delay: 0.2s !important; }
+.ep-ai-typing span:nth-child(3) { animation-delay: 0.4s !important; }
+
+@keyframes epTypingBounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+  40%           { transform: scale(1.1); opacity: 1; }
+}
+
+/* ── Scrollbars ── */
+.ep-ai-chat-messages::-webkit-scrollbar,
+.ep-ai-preview-canvas::-webkit-scrollbar,
+.ep-ai-model-list::-webkit-scrollbar { width: 5px !important; }
+
+.ep-ai-chat-messages::-webkit-scrollbar-thumb,
+.ep-ai-preview-canvas::-webkit-scrollbar-thumb,
+.ep-ai-model-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border-radius: 10px !important;
+}
+
+.theme--dark .ep-ai-chat-messages::-webkit-scrollbar-thumb,
+.theme--dark .ep-ai-preview-canvas::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1) !important;
+}

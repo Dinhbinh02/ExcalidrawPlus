@@ -1,5 +1,31 @@
 console.log("Excalidraw+ extension active: Excalifont overridden and Google Drive Sync enabled.");
 
+(function() {
+  const style = document.createElement('style');
+  style.id = 'excalidraw-plus-custom-fonts';
+  const fontTtfUrl = chrome.runtime.getURL('fonts/DFVN-Excalifont.ttf');
+  const fontOtfUrl = chrome.runtime.getURL('fonts/DFVN-Excalifont.otf');
+  style.textContent = `
+    @font-face {
+      font-family: 'Excalifont';
+      src: url('${fontTtfUrl}') format('truetype'),
+           url('${fontOtfUrl}') format('opentype') !important;
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Virgil';
+      src: url('${fontTtfUrl}') format('truetype'),
+           url('${fontOtfUrl}') format('opentype') !important;
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  `;
+  document.documentElement.appendChild(style);
+})();
+
 let currentUser = null;
 let projectList = [];
 let activeFileId = localStorage.getItem('excalidraw-plus-active-file-id') || null;
@@ -235,6 +261,7 @@ function renderUserUI() {
       <span>Cloud Projects</span>
       <div class="excalidraw-plus-section-actions">
         ${backupBtnHtml}
+        <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary" id="excalidraw-plus-main-ai-btn">🤖 AI Draw</button>
         <button class="excalidraw-plus-btn excalidraw-plus-btn-secondary excalidraw-plus-new-btn" id="excalidraw-plus-new-btn">+ Create new</button>
       </div>
     </div>
@@ -246,6 +273,12 @@ function renderUserUI() {
   renderActiveProjectStatus();
 
   document.getElementById('excalidraw-plus-new-btn').addEventListener('click', handleCreateNewProject);
+  document.getElementById('excalidraw-plus-main-ai-btn').addEventListener('click', () => {
+    closeModal();
+    if (typeof window.openExcalidrawPlusAiModal === 'function') {
+      window.openExcalidrawPlusAiModal();
+    }
+  });
   if (backupTime) {
     document.getElementById('excalidraw-plus-restore-btn').addEventListener('click', handleRestoreBackup);
   }
