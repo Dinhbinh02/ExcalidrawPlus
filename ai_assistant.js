@@ -338,7 +338,7 @@
     renderPreview();
   }
 
-  function renderPreview() {
+  async function renderPreview() {
     const canvas = document.getElementById('ep-ai-preview-canvas');
     if (!canvas) return;
 
@@ -362,8 +362,8 @@
       pre.textContent = lastMermaidCode;
       canvas.appendChild(pre);
     } else {
-      // Render SVG via mermaid (if available) or show a clean code block
-      renderMermaidSVG(lastMermaidCode, canvas);
+      // Render SVG via mermaid — await so the canvas is populated before returning
+      await renderMermaidSVG(lastMermaidCode, canvas);
     }
   }
 
@@ -373,14 +373,42 @@
       if (parser && typeof parser.mermaid === 'function') {
         const mInstance = parser.mermaid();
         if (mInstance) {
+          // Initialize mermaid with a compatible config (same as parseMermaid.js does)
+          try {
+            mInstance.initialize({
+              startOnLoad: false,
+              securityLevel: 'loose',
+              theme: 'default',
+              flowchart: { useMaxWidth: false, htmlLabels: true },
+            });
+          } catch (_) { /* already initialised — ignore */ }
+
           const id = 'ep-mmd-' + Date.now();
-          const wrap = document.createElement('div');
-          wrap.className = 'ep-ai-preview-svg-wrap';
-          wrap.id = id + '-wrap';
-          container.appendChild(wrap);
-          const { svg } = await mInstance.render(id, code);
-          wrap.innerHTML = svg;
-          return;
+
+          // Create an off-screen container — mermaid.render() REQUIRES a DOM element
+          const offscreen = document.createElement('div');
+          offscreen.setAttribute('style', 'opacity:0;position:fixed;z-index:-1;left:-99999px;top:-99999px;');
+          offscreen.id = id + '-offscreen';
+          document.body.appendChild(offscreen);
+
+          try {
+            const { svg } = await mInstance.render(id, code, offscreen);
+            const wrap = document.createElement('div');
+            wrap.className = 'ep-ai-preview-svg-wrap';
+            wrap.innerHTML = svg;
+            // Make SVG responsive
+            const svgEl = wrap.querySelector('svg');
+            if (svgEl) {
+              svgEl.style.maxWidth = '100%';
+              svgEl.style.height = 'auto';
+              svgEl.removeAttribute('width');
+              svgEl.removeAttribute('height');
+            }
+            container.appendChild(wrap);
+            return;
+          } finally {
+            offscreen.remove();
+          }
         }
       }
     } catch (e) {
